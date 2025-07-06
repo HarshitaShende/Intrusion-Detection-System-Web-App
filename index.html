@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Intrusion Detection System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Intrusion Detection System</h1>
+        <p class="subtitle">Monitor & Detect Malicious Network Activities in Real-Time</p>
+
+        <!-- Upload Box -->
+        <div class="upload-box">
+            <h2>Upload Network Data</h2>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".csv" required>
+                <br><br>
+                <button type="submit">✅ Upload & Predict</button>
+            </form>
+        </div>
+
+        {% if df is not none %}
+        <!-- Prediction and Summary Container -->
+        <div class="result-box">
+            <h2>📊 Prediction Results</h2>
+
+            <!-- Pie Chart -->
+            {% if chart_path %}
+            <h3>Summary Report</h3>
+            <img src="{{ url_for('static', filename='uploads/pie_chart.png') }}"
+                 alt="Pie Chart" class="chart-image">
+            {% endif %}
+
+            <!-- Download Button -->
+            <a href="/download" class="download-btn">📥 Download CSV Report</a>
+
+            <!-- Result Cards -->
+            {% for _, row in df.iterrows() %}
+                {% set card_class = 'malicious' if row['Prediction'] == 'Malicious' else 'normal' %}
+                <div class="card {{ card_class }}">
+                    {% for col, val in row.items() %}
+                        <div class="field">
+                            <span>{{ col }}:</span> {{ val }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
